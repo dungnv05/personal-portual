@@ -1,6 +1,28 @@
 export default function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // CORS Security: Allow only specific origins
+  const allowedOrigins = [
+    'https://yundev.space',
+    'https://www.yundev.space',
+    'https://tinh-luong.yundev.space',
+    'http://localhost:5173', // Vite local
+    'http://127.0.0.1:5173'
+  ];
+  
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', 'https://yundev.space');
+  }
+
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Cache-Control', 'no-store, max-age=0');
+
+  // Handle preflight OPTIONS request
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
 
   const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
   const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
