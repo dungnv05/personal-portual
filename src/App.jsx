@@ -18,7 +18,7 @@ function App() {
   const [sessionUser, setSessionUser] = useState(null)
 
   useEffect(() => {
-    // Check shared session cookie across *.yundev.com
+    // Check shared session cookie across *.yundev.space
     const token = getSharedCookie('yundev_session')
     if (token) {
       setSessionUser({ name: "Yun Member", token })
@@ -30,7 +30,7 @@ function App() {
       name: "SalaryFlow",
       desc: "Công cụ tính lương Gross sang Net và ngược lại, cập nhật đầy đủ và chuẩn xác các chính sách bảo hiểm & thuế thu nhập cá nhân mới nhất năm 2026.",
       icon: <WalletCards />,
-      url: "https://tinh-luong.yundev.com", // Production subdomain
+      url: "https://tinh-luong.yundev.space", // Corrected production domain
       status: "Active",
       color: "#06b6d4", // Neon Cyan
       tags: ["HTML5", "Vanilla CSS", "JavaScript", "Chart.js"]
@@ -39,7 +39,7 @@ function App() {
       name: "CyberTask",
       desc: "Ứng dụng Kanban board phong cách Cyberpunk với các widget theo dõi thời gian và năng suất làm việc của cá nhân.",
       icon: <Kanban />,
-      url: "https://task.yundev.com",
+      url: "https://task.yundev.space",
       status: "In Dev",
       color: "#a855f7", // Neon Purple
       tags: ["React", "Vite", "Dnd-kit", "LocalForage"]
@@ -48,7 +48,7 @@ function App() {
       name: "SecretVault",
       desc: "Hệ thống ghi chú bảo mật, mã hóa dữ liệu end-to-end (E2EE) trực tiếp tại trình duyệt sử dụng Web Crypto API.",
       icon: <ShieldAlert />,
-      url: "https://vault.yundev.com",
+      url: "https://vault.yundev.space",
       status: "In Dev",
       color: "#ec4899", // Neon Pink
       tags: ["React", "Tailwind", "Web Crypto API"]
@@ -80,7 +80,7 @@ function App() {
             <div className="brand-icon">
               <Terminal />
             </div>
-            <span className="brand-name">YunDev.com</span>
+            <span className="brand-name">YunDev.space</span>
           </div>
           
           <div className="social-links" style={{ alignItems: 'center' }}>
@@ -101,7 +101,7 @@ function App() {
                 <circle cx="4" cy="4" r="2"></circle>
               </svg>
             </a>
-            <a href="mailto:contact@yundev.com" className="social-btn" aria-label="Mail">
+            <a href="mailto:contact@yundev.space" className="social-btn" aria-label="Mail">
               <Mail size={18} />
             </a>
           </div>
@@ -109,13 +109,13 @@ function App() {
 
         {/* Hero Section */}
         <section className="hero-section">
-          <span className="cyber-tag">Microservice Cluster // yundev.com</span>
+          <span className="cyber-tag">Microservice Cluster // yundev.space</span>
           <h1 className="hero-title">
             Chào mừng đến với <br />
             <span className="gradient-text-purple">YunDev Ecosystem</span>
           </h1>
           <p className="hero-subtitle">
-            Cổng thông tin và thư viện ứng dụng cá nhân độc lập. Chia sẻ phiên làm việc tập trung trên toàn bộ các tên miền phụ <code>*.yundev.com</code>.
+            Cổng thông tin và thư viện ứng dụng cá nhân độc lập. Chia sẻ phiên làm việc tập trung trên toàn bộ các tên miền phụ <code>*.yundev.space</code>.
           </p>
         </section>
 
@@ -169,7 +169,7 @@ function App() {
                     className="btn-launch"
                     style={{ marginTop: '1.25rem' }}
                   >
-                    {app.status === 'Active' ? 'Truy cập tinh-luong.yundev.com' : 'Đang phát triển'}
+                    {app.status === 'Active' ? 'Truy cập tinh-luong.yundev.space' : 'Đang phát triển'}
                     {app.status === 'Active' ? <ExternalLink size={14} /> : <ChevronRight size={14} />}
                   </a>
                 </div>
@@ -197,7 +197,7 @@ function App() {
 
         {/* Footer */}
         <footer className="portal-footer">
-          <p>© 2026 YunDev.com. Kiến trúc Microservices & Đa tên miền phụ.</p>
+          <p>© 2026 YunDev.space. Kiến trúc Microservices & Đa tên miền phụ.</p>
         </footer>
       </div>
     </>

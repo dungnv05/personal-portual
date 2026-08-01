@@ -1,8 +1,8 @@
 /**
- * Utility for Wildcard Cookie Management across *.yundev.com subdomains
+ * Utility for Wildcard Cookie Management across *.yundev.space subdomains
  */
 
-const COOKIE_DOMAIN = window.location.hostname.includes('yundev.com') ? '.yundev.com' : '';
+const COOKIE_DOMAIN = window.location.hostname.includes('yundev.space') ? '.yundev.space' : '';
 
 export function setSharedCookie(name, value, days = 30) {
   const expires = new Date(Date.now() + days * 864e5).toUTCString();
@@ -27,6 +27,6 @@ export function removeSharedCookie(name) {
  * Replace SUPABASE_URL and SUPABASE_ANON_KEY with your project credentials
  */
 export const SUPABASE_CONFIG = {
-  url: "https://ekyfmoouhgwggtiznxnz.supabase.co",
-  anonKey: "sb_publishable_zfqS-5Y-9d8dYoTjPGp3CQ_gUTHa5U-"
+  url: "https://your-project.supabase.co",
+  anonKey: "YOUR_SUPABASE_ANON_KEY"
 };
