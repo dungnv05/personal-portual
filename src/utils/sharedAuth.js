@@ -1,5 +1,5 @@
 /**
- * Utility for Wildcard Cookie Management across *.yundev.space subdomains
+ * Utility for Wildcard Cookie Management & Supabase Client Config across *.yundev.space
  */
 
 const COOKIE_DOMAIN = window.location.hostname.includes('yundev.space') ? '.yundev.space' : '';
@@ -23,10 +23,31 @@ export function removeSharedCookie(name) {
 }
 
 /**
- * Supabase Config Placeholder
- * Replace SUPABASE_URL and SUPABASE_ANON_KEY with your project credentials
+ * Supabase Client Configuration
+ * Reads dynamically from Vite environment variables (.env / Vercel Environment Variables)
  */
 export const SUPABASE_CONFIG = {
-  url: "https://your-project.supabase.co",
-  anonKey: "YOUR_SUPABASE_ANON_KEY"
+  url: import.meta.env.VITE_SUPABASE_URL || "https://your-project.supabase.co",
+  anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY || "YOUR_SUPABASE_ANON_KEY"
 };
+
+/**
+ * Helper to test connection with configured Supabase project
+ */
+export async function testSupabaseConnection() {
+  if (!SUPABASE_CONFIG.url || SUPABASE_CONFIG.url.includes("your-project")) {
+    return { success: false, message: "Chưa điền Supabase URL & Anon Key thực tế." };
+  }
+
+  try {
+    const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/`, {
+      headers: { 'apikey': SUPABASE_CONFIG.anonKey }
+    });
+    if (res.ok) {
+      return { success: true, message: "Kết nối thành công tới Supabase API!" };
+    }
+    return { success: false, message: `Máy chủ phản hồi mã lỗi: ${res.status}` };
+  } catch (err) {
+    return { success: false, message: `Lỗi kết nối mạng: ${err.message}` };
+  }
+}
