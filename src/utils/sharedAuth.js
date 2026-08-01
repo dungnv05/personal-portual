@@ -27,8 +27,8 @@ export function removeSharedCookie(name) {
  * Reads dynamically from Vite environment variables (.env / Vercel Environment Variables)
  */
 export const SUPABASE_CONFIG = {
-  url: import.meta.env.VITE_SUPABASE_URL || "https://your-project.supabase.co",
-  anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY || "YOUR_SUPABASE_ANON_KEY"
+  url: import.meta.env.SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL || "https://your-project.supabase.co",
+  anonKey: import.meta.env.SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || "YOUR_SUPABASE_ANON_KEY"
 };
 
 // Auto-sync valid Supabase credentials to shared wildcard cookie (.yundev.space)
