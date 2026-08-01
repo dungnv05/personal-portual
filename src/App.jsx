@@ -9,30 +9,84 @@ import {
   Kanban, 
   ShieldAlert, 
   ExternalLink,
-  UserCheck
+  UserCheck,
+  LogOut,
+  LogIn,
+  X,
+  Lock,
+  UserPlus
 } from 'lucide-react'
-import { getSharedCookie } from './utils/sharedAuth'
+import { 
+  supabase, 
+  signInWithEmail, 
+  signUpWithEmail, 
+  signOutUser 
+} from './utils/sharedAuth'
 import './App.css'
 
 function App() {
-  const [sessionUser, setSessionUser] = useState(null)
+  const [currentUser, setCurrentUser] = useState(null)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [isSignUp, setIsSignUp] = useState(false)
+  
+  // Auth Form State
+  const [authEmail, setAuthEmail] = useState('')
+  const [authPassword, setAuthPassword] = useState('')
+  const [authLoading, setAuthLoading] = useState(false)
+  const [authMessage, setAuthMessage] = useState(null)
 
   useEffect(() => {
-    // Check shared session cookie across *.yundev.space
-    const token = getSharedCookie('yundev_session')
-    if (token) {
-      setSessionUser({ name: "Yun Member", token })
-    }
+    // Check active session on load
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setCurrentUser(session.user)
+      }
+    })
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setCurrentUser(session?.user || null)
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
+
+  const handleAuthSubmit = async (e) => {
+    e.preventDefault()
+    setAuthLoading(true)
+    setAuthMessage(null)
+
+    try {
+      if (isSignUp) {
+        const { data, error } = await signUpWithEmail(authEmail, authPassword)
+        if (error) throw error
+        setAuthMessage({ type: 'success', text: 'Đăng ký thành công! Vui lòng kiểm tra email để xác nhận (nếu có).' })
+      } else {
+        const { data, error } = await signInWithEmail(authEmail, authPassword)
+        if (error) throw error
+        setCurrentUser(data.user)
+        setShowAuthModal(false)
+      }
+    } catch (err) {
+      setAuthMessage({ type: 'error', text: err.message || 'Thao tác thất bại. Vui lòng thử lại.' })
+    } finally {
+      setAuthLoading(false)
+    }
+  }
+
+  const handleLogout = async () => {
+    await signOutUser()
+    setCurrentUser(null)
+  }
 
   const apps = [
     {
       name: "SalaryFlow",
       desc: "Công cụ tính lương Gross sang Net và ngược lại, cập nhật đầy đủ và chuẩn xác các chính sách bảo hiểm & thuế thu nhập cá nhân mới nhất năm 2026.",
       icon: <WalletCards />,
-      url: "https://tinh-luong.yundev.space", // Corrected production domain
+      url: "https://tinh-luong.yundev.space",
       status: "Active",
-      color: "#06b6d4", // Neon Cyan
+      color: "#06b6d4",
       tags: ["HTML5", "Vanilla CSS", "JavaScript", "Chart.js"]
     },
     {
@@ -41,7 +95,7 @@ function App() {
       icon: <Kanban />,
       url: "https://task.yundev.space",
       status: "In Dev",
-      color: "#a855f7", // Neon Purple
+      color: "#a855f7",
       tags: ["React", "Vite", "Dnd-kit", "LocalForage"]
     },
     {
@@ -50,7 +104,7 @@ function App() {
       icon: <ShieldAlert />,
       url: "https://vault.yundev.space",
       status: "In Dev",
-      color: "#ec4899", // Neon Pink
+      color: "#ec4899",
       tags: ["React", "Tailwind", "Web Crypto API"]
     }
   ]
@@ -60,7 +114,7 @@ function App() {
     { name: "Vite", icon: "⚡" },
     { name: "JavaScript (ES6+)", icon: "💛" },
     { name: "Vanilla CSS & Grid", icon: "🎨" },
-    { name: "Node.js", icon: "🟢" },
+    { name: "Supabase Auth & DB", icon: "⚡" },
     { name: "Git & GitHub", icon: "🐙" }
   ]
 
@@ -83,39 +137,44 @@ function App() {
             <span className="brand-name">YunDev.space</span>
           </div>
           
-          <div className="social-links" style={{ alignItems: 'center' }}>
-            {sessionUser && (
-              <span className="tag-badge" style={{ borderColor: 'var(--neon-green)', color: 'var(--neon-green)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                <UserCheck size={14} /> Session Synced
-              </span>
+          <div className="social-links" style={{ alignItems: 'center', gap: '0.75rem' }}>
+            {currentUser ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span className="tag-badge" style={{ borderColor: 'var(--neon-green)', color: 'var(--neon-green)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <UserCheck size={14} /> {currentUser.email}
+                </span>
+                <button type="button" className="social-btn" onClick={handleLogout} title="Đăng xuất">
+                  <LogOut size={16} />
+                </button>
+              </div>
+            ) : (
+              <button 
+                type="button" 
+                className="btn-launch" 
+                style={{ marginTop: 0, padding: '0.45rem 0.9rem' }}
+                onClick={() => { setIsSignUp(false); setShowAuthModal(true); }}
+              >
+                <LogIn size={15} /> Đăng nhập
+              </button>
             )}
+
             <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="social-btn" aria-label="GitHub">
               <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
               </svg>
-            </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="social-btn" aria-label="LinkedIn">
-              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-                <rect x="2" y="9" width="4" height="12"></rect>
-                <circle cx="4" cy="4" r="2"></circle>
-              </svg>
-            </a>
-            <a href="mailto:contact@yundev.space" className="social-btn" aria-label="Mail">
-              <Mail size={18} />
             </a>
           </div>
         </header>
 
         {/* Hero Section */}
         <section className="hero-section">
-          <span className="cyber-tag">Microservice Cluster // yundev.space</span>
+          <span className="cyber-tag">Supabase Auth Integrated // yundev.space</span>
           <h1 className="hero-title">
             Chào mừng đến với <br />
             <span className="gradient-text-purple">YunDev Ecosystem</span>
           </h1>
           <p className="hero-subtitle">
-            Cổng thông tin và thư viện ứng dụng cá nhân độc lập. Chia sẻ phiên làm việc tập trung trên toàn bộ các tên miền phụ <code>*.yundev.space</code>.
+            Cổng thông tin và thư viện ứng dụng cá nhân độc lập. Tự động đồng bộ tài khoản và phiên đăng nhập trên toàn bộ tên miền phụ <code>*.yundev.space</code>.
           </p>
         </section>
 
@@ -197,9 +256,65 @@ function App() {
 
         {/* Footer */}
         <footer className="portal-footer">
-          <p>© 2026 YunDev.space. Kiến trúc Microservices & Đa tên miền phụ.</p>
+          <p>© 2026 YunDev.space. Tích hợp Supabase Authentication & Multi-Subdomain SSO.</p>
         </footer>
       </div>
+
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <div className="auth-modal-overlay" onClick={() => setShowAuthModal(false)}>
+          <div className="cyber-card auth-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="auth-modal-header">
+              <h3>{isSignUp ? <UserPlus size={20} /> : <Lock size={20} />} {isSignUp ? 'Tạo Tài Khoản YunDev' : 'Đăng Nhập YunDev'}</h3>
+              <button type="button" className="btn-close" onClick={() => setShowAuthModal(false)}>
+                <X size={18} />
+              </button>
+            </div>
+
+            {authMessage && (
+              <div className={`auth-alert ${authMessage.type === 'error' ? 'auth-alert-error' : 'auth-alert-success'}`}>
+                {authMessage.text}
+              </div>
+            )}
+
+            <form onSubmit={handleAuthSubmit} className="auth-form">
+              <div className="auth-input-group">
+                <label>Địa chỉ Email</label>
+                <input 
+                  type="email" 
+                  required 
+                  placeholder="name@yundev.space"
+                  value={authEmail}
+                  onChange={(e) => setAuthEmail(e.target.value)}
+                />
+              </div>
+
+              <div className="auth-input-group">
+                <label>Mật khẩu</label>
+                <input 
+                  type="password" 
+                  required 
+                  placeholder="••••••••"
+                  value={authPassword}
+                  onChange={(e) => setAuthPassword(e.target.value)}
+                />
+              </div>
+
+              <button type="submit" className="btn-launch btn-auth-submit" disabled={authLoading}>
+                {authLoading ? 'Đang xử lý...' : (isSignUp ? 'Đăng ký ngay' : 'Đăng nhập')}
+              </button>
+            </form>
+
+            <div className="auth-modal-footer">
+              {isSignUp ? (
+                <span>Đã có tài khoản? <button type="button" className="auth-switch-link" onClick={() => setIsSignUp(false)}>Đăng nhập ngay</button></span>
+              ) : (
+                <span>Chưa có tài khoản? <button type="button" className="auth-switch-link" onClick={() => setIsSignUp(true)}>Đăng ký tài khoản</button></span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }

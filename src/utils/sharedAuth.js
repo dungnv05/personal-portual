@@ -1,3 +1,5 @@
+import { createClient } from '@supabase/supabase-js'
+
 /**
  * Utility for Wildcard Cookie Management & Supabase Client Config across *.yundev.space
  */
@@ -31,29 +33,34 @@ export const SUPABASE_CONFIG = {
   anonKey: import.meta.env.SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || "YOUR_SUPABASE_ANON_KEY"
 };
 
-// Auto-sync valid Supabase credentials to shared wildcard cookie (.yundev.space)
-if (SUPABASE_CONFIG.url && !SUPABASE_CONFIG.url.includes('your-project')) {
-  setSharedCookie('yundev_supabase_url', SUPABASE_CONFIG.url);
-  setSharedCookie('yundev_supabase_key', SUPABASE_CONFIG.anonKey);
+// Initialize Supabase Client with cross-domain session support
+export const supabase = createClient(
+  SUPABASE_CONFIG.url,
+  SUPABASE_CONFIG.anonKey,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storageKey: 'yundev_supabase_auth_token'
+    }
+  }
+);
+
+// Auth Helpers
+export async function signUpWithEmail(email, password) {
+  return await supabase.auth.signUp({ email, password });
 }
 
-/**
- * Helper to test connection with configured Supabase project
- */
-export async function testSupabaseConnection() {
-  if (!SUPABASE_CONFIG.url || SUPABASE_CONFIG.url.includes("your-project")) {
-    return { success: false, message: "Chưa điền Supabase URL & Anon Key thực tế." };
+export async function signInWithEmail(email, password) {
+  const res = await supabase.auth.signInWithPassword({ email, password });
+  if (res.data?.session) {
+    setSharedCookie('yundev_session', res.data.session.access_token);
   }
+  return res;
+}
 
-  try {
-    const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/`, {
-      headers: { 'apikey': SUPABASE_CONFIG.anonKey }
-    });
-    if (res.ok) {
-      return { success: true, message: "Kết nối thành công tới Supabase API!" };
-    }
-    return { success: false, message: `Máy chủ phản hồi mã lỗi: ${res.status}` };
-  } catch (err) {
-    return { success: false, message: `Lỗi kết nối mạng: ${err.message}` };
-  }
+export async function signOutUser() {
+  removeSharedCookie('yundev_session');
+  return await supabase.auth.signOut();
 }
