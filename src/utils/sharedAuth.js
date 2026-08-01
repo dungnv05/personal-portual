@@ -31,6 +31,12 @@ export const SUPABASE_CONFIG = {
   anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY || "YOUR_SUPABASE_ANON_KEY"
 };
 
+// Auto-sync valid Supabase credentials to shared wildcard cookie (.yundev.space)
+if (SUPABASE_CONFIG.url && !SUPABASE_CONFIG.url.includes('your-project')) {
+  setSharedCookie('yundev_supabase_url', SUPABASE_CONFIG.url);
+  setSharedCookie('yundev_supabase_key', SUPABASE_CONFIG.anonKey);
+}
+
 /**
  * Helper to test connection with configured Supabase project
  */
