@@ -24,17 +24,18 @@ export function removeSharedCookie(name) {
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/${domainAttr}`;
 }
 
-/**
- * Supabase Client Configuration
- * Reads dynamically from Vite environment variables (.env / Vercel Environment Variables)
- */
+const rawUrl = import.meta.env.SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL || "";
+const rawKey = import.meta.env.SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || "";
+
+const isDummyUrl = !rawUrl || rawUrl.includes("your-project") || rawUrl.includes("abcdefghijklmnopqrst");
+
 export const SUPABASE_CONFIG = {
-  url: import.meta.env.SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL || "https://your-project.supabase.co",
-  anonKey: import.meta.env.SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || "YOUR_SUPABASE_ANON_KEY"
+  url: isDummyUrl ? "https://placeholder-supabase.supabase.co" : rawUrl,
+  anonKey: isDummyUrl ? "dummy-key" : rawKey
 };
 
-// Initialize Supabase Client with cross-domain session support
-export const supabase = createClient(
+// Initialize Supabase Client
+export let supabase = createClient(
   SUPABASE_CONFIG.url,
   SUPABASE_CONFIG.anonKey,
   {
@@ -46,6 +47,27 @@ export const supabase = createClient(
     }
   }
 );
+
+// If static build had placeholder URL, attempt dynamic runtime fetch from /api/config
+if (isDummyUrl) {
+  fetch('/api/config')
+    .then(res => res.json())
+    .then(data => {
+      if (data.supabaseUrl && data.supabaseAnonKey) {
+        SUPABASE_CONFIG.url = data.supabaseUrl;
+        SUPABASE_CONFIG.anonKey = data.supabaseAnonKey;
+        supabase = createClient(data.supabaseUrl, data.supabaseAnonKey, {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+            storageKey: 'yundev_supabase_auth_token'
+          }
+        });
+      }
+    })
+    .catch(() => {});
+}
 
 // Auth Helpers
 export async function signUpWithEmail(email, password) {
