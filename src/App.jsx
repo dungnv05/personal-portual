@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { 
-  WalletCards, 
-  Terminal, 
-  Mail, 
-  AppWindow, 
-  ChevronRight, 
-  Cpu, 
-  Kanban, 
-  ShieldAlert, 
+import {
+  WalletCards,
+  Terminal,
+  Mail,
+  AppWindow,
+  ChevronRight,
+  Cpu,
+  Kanban,
+  ShieldAlert,
   ExternalLink,
   UserCheck,
   LogOut,
@@ -16,11 +16,11 @@ import {
   Lock,
   UserPlus
 } from 'lucide-react'
-import { 
-  supabase, 
-  signInWithEmail, 
-  signUpWithEmail, 
-  signOutUser 
+import {
+  supabase,
+  signInWithEmail,
+  signUpWithEmail,
+  signOutUser
 } from './utils/sharedAuth'
 import './App.css'
 
@@ -28,7 +28,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [isSignUp, setIsSignUp] = useState(false)
-  
+
   // Auth Form State
   const [authEmail, setAuthEmail] = useState('')
   const [authPassword, setAuthPassword] = useState('')
@@ -136,7 +136,7 @@ function App() {
             </div>
             <span className="brand-name">YunDev.space</span>
           </div>
-          
+
           <div className="social-links" style={{ alignItems: 'center', gap: '0.75rem' }}>
             {currentUser ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -148,9 +148,9 @@ function App() {
                 </button>
               </div>
             ) : (
-              <button 
-                type="button" 
-                className="btn-launch" 
+              <button
+                type="button"
+                className="btn-launch"
                 style={{ marginTop: 0, padding: '0.45rem 0.9rem' }}
                 onClick={() => { setIsSignUp(false); setShowAuthModal(true); }}
               >
@@ -158,7 +158,7 @@ function App() {
               </button>
             )}
 
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="social-btn" aria-label="GitHub">
+            <a href="https://github.com/dungnv05" target="_blank" rel="noopener noreferrer" className="social-btn" aria-label="GitHub">
               <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
               </svg>
@@ -189,14 +189,14 @@ function App() {
 
           <div className="apps-grid">
             {apps.map((app, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="cyber-card app-card"
                 style={{ '--accent-color': app.color }}
               >
                 <div>
                   <div className="card-overlay"></div>
-                  
+
                   {/* Status Tag */}
                   <span className={`app-status ${app.status === 'Active' ? 'status-active' : 'status-dev'}`}>
                     {app.status}
@@ -221,10 +221,10 @@ function App() {
                       <span key={tIdx} className="tag-badge">{tag}</span>
                     ))}
                   </div>
-                  <a 
-                    href={app.url} 
-                    target={app.status === 'Active' ? '_blank' : '_self'} 
-                    rel="noopener noreferrer" 
+                  <a
+                    href={app.url}
+                    target={app.status === 'Active' ? '_blank' : '_self'}
+                    rel="noopener noreferrer"
                     className="btn-launch"
                     style={{ marginTop: '1.25rem' }}
                   >
@@ -280,9 +280,9 @@ function App() {
             <form onSubmit={handleAuthSubmit} className="auth-form">
               <div className="auth-input-group">
                 <label>Địa chỉ Email</label>
-                <input 
-                  type="email" 
-                  required 
+                <input
+                  type="email"
+                  required
                   placeholder="name@yundev.space"
                   value={authEmail}
                   onChange={(e) => setAuthEmail(e.target.value)}
@@ -291,9 +291,9 @@ function App() {
 
               <div className="auth-input-group">
                 <label>Mật khẩu</label>
-                <input 
-                  type="password" 
-                  required 
+                <input
+                  type="password"
+                  required
                   placeholder="••••••••"
                   value={authPassword}
                   onChange={(e) => setAuthPassword(e.target.value)}
