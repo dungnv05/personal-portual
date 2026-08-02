@@ -14,7 +14,8 @@ import {
   LogIn,
   X,
   Lock,
-  UserPlus
+  UserPlus,
+  Gamepad2
 } from 'lucide-react'
 import {
   supabase,
@@ -90,13 +91,13 @@ function App() {
       tags: ["HTML5", "Vanilla CSS", "JavaScript", "Chart.js"]
     },
     {
-      name: "CyberTask",
-      desc: "Ứng dụng Kanban board phong cách Cyberpunk với các widget theo dõi thời gian và năng suất làm việc của cá nhân.",
-      icon: <Kanban />,
-      url: "https://task.yundev.space",
-      status: "In Dev",
-      color: "#a855f7",
-      tags: ["React", "Vite", "Dnd-kit", "LocalForage"]
+      name: "Vang Vọng Sử Việt",
+      desc: "Web Game 3D Idle Gacha thẻ bài đề tài lịch sử Việt Nam. Chiêu mộ danh nhân lịch sử, dàn trận 6v6, kích hoạt Hợp Kích, Thần Khí và Linh Vật thần thoại.",
+      icon: <Gamepad2 />,
+      url: "https://vang-vong-su-viet.yundev.space",
+      status: "Active",
+      color: "#f59e0b",
+      tags: ["React", "Three.js", "R3F", "Zustand", "TypeScript"]
     },
     {
       name: "SecretVault",
@@ -228,7 +229,7 @@ function App() {
                     className="btn-launch"
                     style={{ marginTop: '1.25rem' }}
                   >
-                    {app.status === 'Active' ? 'Truy cập tinh-luong.yundev.space' : 'Đang phát triển'}
+                    {app.status === 'Active' ? `Truy cập ${app.url.replace('https://', '')}` : 'Đang phát triển'}
                     {app.status === 'Active' ? <ExternalLink size={14} /> : <ChevronRight size={14} />}
                   </a>
                 </div>
