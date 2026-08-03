@@ -15,7 +15,8 @@ import {
   X,
   Lock,
   UserPlus,
-  Gamepad2
+  Gamepad2,
+  Activity
 } from 'lucide-react'
 import {
   supabase,
@@ -128,6 +129,15 @@ function App() {
       status: "In Dev",
       color: "#ec4899",
       tags: ["React", "Tailwind", "Web Crypto API"]
+    },
+    {
+      name: "IVF Journey",
+      desc: "Nền tảng hỗ trợ và đồng hành cùng hành trình IVF. Theo dõi lịch trình, lưu trữ kết quả và kiến thức sinh sản.",
+      icon: <Activity />,
+      url: "https://ivf-journey.yundev.space",
+      status: "Active",
+      color: "#10b981",
+      tags: ["React", "Tailwind", "Supabase"]
     }
   ]
 
