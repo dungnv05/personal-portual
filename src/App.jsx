@@ -21,7 +21,8 @@ import {
   supabase,
   signInWithEmail,
   signUpWithEmail,
-  signOutUser
+  signOutUser,
+  syncSharedSSOSession
 } from './utils/sharedAuth'
 import './App.css'
 
@@ -37,19 +38,39 @@ function App() {
   const [authMessage, setAuthMessage] = useState(null)
 
   useEffect(() => {
-    // Check active session on load
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        setCurrentUser(session.user)
+    // Check active session & sync SSO on load
+    syncSharedSSOSession().then(user => {
+      if (user) setCurrentUser(user)
+    })
+
+    const handleSync = () => {
+      syncSharedSSOSession().then(user => setCurrentUser(user))
+    }
+
+    window.addEventListener('focus', handleSync)
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') handleSync()
+    }
+    document.addEventListener('visibilitychange', handleVisibility)
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'yundev_session' || e.key === 'yundev_supabase_auth_token') {
+        handleSync()
       }
     })
+
+    const intervalId = setInterval(handleSync, 2500)
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setCurrentUser(session?.user || null)
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      subscription.unsubscribe()
+      window.removeEventListener('focus', handleSync)
+      document.removeEventListener('visibilitychange', handleVisibility)
+      clearInterval(intervalId)
+    }
   }, [])
 
   const handleAuthSubmit = async (e) => {
